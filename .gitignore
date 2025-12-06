@@ -361,3 +361,7 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+# Application-specific files
+# Receipt files (user data - should not be committed)
+receipt_*.json

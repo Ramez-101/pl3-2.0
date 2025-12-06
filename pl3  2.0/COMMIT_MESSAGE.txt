@@ -1,0 +1,71 @@
+# Commit Message Template
+
+Use this message when committing to GitHub:
+
+```
+Enhanced GUI with full console feature parity + Receipt History in Console
+
+? New Features:
+- Advanced search & filter dialog (category, price range, in-stock, sort options)
+- Complete cart management (remove items, update quantities, clear cart)
+- Receipt history viewer with detailed transaction display
+- Enhanced status bar with visual success/error indicators (?/?)
+- Console mode: Added "View Receipt History" feature (Option 8)
+
+?? Bug Fixes:
+- Fixed Avalonia initialization error ("Unable to locate IWindowingPlatform")
+- Fixed clearScreen function ordering in UI.fs
+- Fixed lambda expression syntax errors in SimpleGui.fs
+- Corrected return types in Program.fs main function
+
+?? Documentation:
+- Updated README.md with enhanced GUI feature descriptions
+- Created GUI_FEATURES.md with comprehensive feature documentation
+- Added GIT_PUSH_GUIDE.md for easy GitHub workflow
+- Updated Quick Start section with proper directory navigation
+
+?? UI/UX Improvements:
+- Increased main window size (1100x650)
+- Added cart item selection for management operations
+- Smart button states (enabled/disabled based on context)
+- Modal dialogs with proper centering and validation
+- Real-time status updates for all operations
+
+?? Feature Parity Achieved:
+Both Console and GUI modes now offer identical functionality:
+- View all products ?
+- Search by name ?
+- Advanced filtering (category, price, stock) ?
+- Multiple sort options ?
+- Add to cart ?
+- Remove from cart ?
+- Update quantities ?
+- View cart ?
+- Checkout with receipt generation ?
+- View receipt history ?
+
+??? Files Modified:
+- SimpleGui.fs - Complete GUI rewrite (~425 lines)
+- Program.fs - Added handleViewReceipts function
+- UI.fs - Fixed clearScreen definition order
+- README.md - Updated GUI mode documentation
+- .gitignore - Added receipt_*.json exclusion
+
+?? Files Added:
+- GUI_FEATURES.md - Comprehensive GUI documentation
+- GIT_PUSH_GUIDE.md - Git workflow guide
+
+?? Tested:
+- GUI Mode: All features working (search, filter, cart, receipts)
+- Console Mode: All features including new receipt history
+- Build: Successful (no errors or warnings)
+- Avalonia: Proper initialization and platform detection
+
+---
+
+This update brings the application to full feature parity between Console
+and GUI modes, providing users with a complete shopping experience regardless
+of their preferred interface.
+```
+
+Copy this entire message when you do `git commit`.

@@ -236,6 +236,72 @@ let handleCheckout (state: AppState) : AppState =
             UI.waitForEnter()
             state
 
+// Handle view receipt history
+let handleViewReceipts (state: AppState) : AppState =
+    UI.clearScreen()
+    printfn "╔══════════════════════════════════════════════════════════════════════════════╗"
+    printfn "║                           RECEIPT HISTORY                                    ║"
+    printfn "╚══════════════════════════════════════════════════════════════════════════════╝"
+    
+    // Get all JSON receipt files in current directory
+    let receiptFiles = 
+        System.IO.Directory.GetFiles(".", "receipt_*.json")
+        |> Array.sort
+        |> Array.rev  // Most recent first
+        |> Array.toList
+    
+    if receiptFiles.IsEmpty then
+        UI.displayInfo "\nNo receipts found. Complete a checkout to create a receipt."
+    else
+        printfn "\nFound %d receipt(s):\n" receiptFiles.Length
+        receiptFiles |> List.iteri (fun i file -> 
+            let fileName = System.IO.Path.GetFileName(file)
+            printfn "  %d. %s" (i + 1) fileName)
+        
+        let fileNumber = UI.getUserInput "\nEnter receipt number to view (or 0 to cancel): "
+        
+        match System.Int32.TryParse(fileNumber) with
+        | true, num when num > 0 && num <= receiptFiles.Length ->
+            let selectedFile = receiptFiles.[num - 1]
+            match FileManager.loadReceipt selectedFile with
+            | Success receipt ->
+                UI.clearScreen()
+                printfn "╔══════════════════════════════════════════════════════════════════════════════╗"
+                printfn "║                            RECEIPT DETAILS                                   ║"
+                printfn "╚══════════════════════════════════════════════════════════════════════════════╝"
+                printfn "\n📅 Date: %s" (receipt.Date.ToString("yyyy-MM-dd HH:mm:ss"))
+                printfn "\n📦 Items:\n"
+                printfn "%-35s %5s %10s %12s" "Product" "Qty" "Price" "Total"
+                printfn "%s" (String.replicate 78 "─")
+                
+                for item in receipt.Items do
+                    let itemTotal = item.Product.Price * decimal item.Quantity
+                    printfn "%-35s x%-4d $%9.2f  = $%10.2f" 
+                        item.Product.Name 
+                        item.Quantity 
+                        item.Product.Price
+                        itemTotal
+                
+                printfn "\n%s" (String.replicate 78 "─")
+                printfn "%51s $%10.2f" "Subtotal:" receipt.Subtotal
+                
+                if receipt.Discount > 0m then
+                    printfn "%51s -$%9.2f" "Discount:" receipt.Discount
+                
+                printfn "%51s $%10.2f" "Tax (8.5%):" receipt.Tax
+                printfn "%s" (String.replicate 78 "═")
+                printfn "%51s $%10.2f" "TOTAL:" receipt.Total
+                printfn "%s" (String.replicate 78 "═")
+            | Error msg ->
+                UI.displayError $"\nCould not load receipt: {msg}"
+        | true, 0 ->
+            UI.displayInfo "\nCancelled"
+        | _ ->
+            UI.displayError "\nInvalid selection"
+    
+    UI.waitForEnter()
+    state
+
 // Main application loop (Console mode)
 let rec mainLoop (state: AppState) : unit =
     UI.displayMainMenu()
@@ -249,7 +315,8 @@ let rec mainLoop (state: AppState) : unit =
         | "5" -> handleRemoveFromCart state
         | "6" -> handleUpdateQuantity state
         | "7" -> handleCheckout state
-        | "8" -> 
+        | "8" -> handleViewReceipts state
+        | "9" -> 
             UI.displayInfo "Thank you for visiting our store!"
             Environment.Exit(0)
             state
@@ -319,4 +386,3 @@ let main argv =
     | _ ->
         printfn "\nInvalid choice. Starting GUI mode by default..."
         runGuiMode argv
-        0

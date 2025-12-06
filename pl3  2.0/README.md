@@ -8,16 +8,24 @@ A feature-rich store simulator application built with F# that supports both cons
 ?? **Shopping Cart** - Add, remove, and update items  
 ?? **Smart Pricing** - Automatic discounts and tax calculation  
 ?? **Search & Filter** - Find products easily  
-?? **Receipt Export** - Save receipts as text files  
+?? **Receipt Export** - Save receipts as JSON files  
 
 ## Quick Start
 
 ```bash
+# Navigate to the project directory
+cd "pl3  2.0"
+
 # Build
 dotnet build
 
 # Run
 dotnet run
+```
+
+**Alternative** - Run from parent directory:
+```bash
+dotnet run --project "pl3  2.0/pl3  2.0.fsproj"
 ```
 
 Select your preferred mode:
@@ -38,7 +46,7 @@ pl3  2.0/
 ??? Cart.fs            # Shopping cart operations
 ??? PriceCalculator.fs # Price and discount calculations
 ??? SearchFilter.fs    # Product search and filtering
-??? FileManager.fs     # Receipt file operations
+??? FileManager.fs     # Receipt file operations (JSON)
 ??? UI.fs              # Console user interface
 ??? SimpleGui.fs       # Avalonia GUI window
 ??? Program.fs         # Application entry point
@@ -55,7 +63,7 @@ pl3  2.0/
 
 ### Features
 - **SearchFilter.fs** - Search and filter products by various criteria
-- **FileManager.fs** - Save and load receipts as text files
+- **FileManager.fs** - Save and load receipts as JSON files
 
 ### User Interface
 - **UI.fs** - Console-based text interface
@@ -70,17 +78,43 @@ The store includes 10 products across categories:
 
 ## GUI Mode
 
-**Three-Panel Layout:**
-- ?? **Left Panel**: Product list with search functionality
+**Enhanced Three-Panel Layout:**
+- ?? **Left Panel**: Product list with search and advanced filtering
 - ?? **Middle Panel**: Product details and quantity selector
-- ?? **Right Panel**: Shopping cart with live price breakdown
+- ?? **Right Panel**: Shopping cart with full management and price breakdown
 
-**Features:**
-- Real-time search filtering
-- Click to select products
-- Add to cart with quantity validation
-- Visual status updates
-- One-click checkout
+**Core Features:**
+- ? Real-time product search by name
+- ? Advanced search & filter dialog with:
+  - Category filtering
+  - Price range filtering
+  - In-stock only filter
+  - Multiple sort options (name, price ascending/descending)
+- ? Click to select products
+- ? Add to cart with quantity validation
+- ? Visual status updates
+
+**Cart Management:**
+- ? **Remove items** - Select and remove individual items from cart
+- ? **Update quantity** - Change quantities with dialog (supports 0 to remove)
+- ? **Clear cart** - Empty entire cart with one click
+- ? Live price breakdown with automatic discounts
+- ? One-click checkout with receipt generation
+
+**Receipt History:**
+- ? **View all saved receipts** - Browse complete purchase history
+- ? **Receipt details viewer** - See full order information including:
+  - Transaction date and time
+  - Item list with quantities and prices
+  - Price breakdown (subtotal, discount, tax, total)
+- ? Easy-to-use dialog interface
+
+**Status Bar:**
+- Real-time feedback for all operations
+- Success/error messages with visual indicators (?/?)
+- Helpful hints and confirmations
+
+All console mode features are now available in the GUI with an intuitive point-and-click interface!
 
 ## Console Mode
 
@@ -92,7 +126,8 @@ The store includes 10 products across categories:
 5. Remove from Cart
 6. Update Quantity
 7. Checkout
-8. Exit
+8. **View Receipt History** ??
+9. Exit
 
 **Search Options:**
 - Search by name
@@ -100,6 +135,12 @@ The store includes 10 products across categories:
 - Filter by price range
 - View in-stock only
 - Sort by price or name
+
+**Receipt History Features:**
+- Browse all saved receipts
+- View detailed receipt information
+- See complete order history
+- Review past transactions with full pricing breakdown
 
 ## Key Features
 
@@ -113,11 +154,37 @@ The store includes 10 products across categories:
 - Tax (8.5%) - Calculated on discounted total
 - **Total** - Final amount
 
-### Receipt Export
-- Saved as `receipt_YYYYMMDD_HHMMSS.txt`
-- Contains complete order details
-- Includes price breakdown
-- Timestamped for records
+### Receipt Export (JSON Format)
+- **Saved as**: `receipt_YYYYMMDD_HHMMSS.json`
+- **Format**: Pretty-printed JSON with indentation
+- **Contains**: 
+  - Transaction date and timestamp
+  - Complete item list with product details
+  - Price breakdown (subtotal, discount, tax, total)
+  - Full order history
+
+**Sample Receipt Structure:**
+```json
+{
+  "Date": "2025-12-03T19:35:56.034028+02:00",
+  "Items": [
+    {
+      "Product": {
+        "Id": 6,
+        "Name": "Headphones",
+        "Price": 49.99,
+        "Category": "Electronics",
+        "Stock": 25
+      },
+      "Quantity": 3
+    }
+  ],
+  "Subtotal": 1045.05,
+  "Discount": 104.505,
+  "Tax": 79.946325,
+  "Total": 1020.491325
+}
+```
 
 ## Technologies
 
@@ -163,6 +230,54 @@ products
 |> sortByPrice
 ```
 
+### JSON Serialization (FileManager.fs)
+```fsharp
+// Save receipt with pretty-printed JSON
+let saveReceipt (receipt: Receipt) (filePath: string) : StoreResult<string> =
+    try
+        let json = JsonSerializer.Serialize(receipt, jsonOptions)
+        File.WriteAllText(filePath, json)
+        Success $"Receipt saved to {filePath}"
+    with
+    | ex -> Error $"Failed to save receipt: {ex.Message}"
+
+// Load receipt from JSON file
+let loadReceipt (filePath: string) : StoreResult<Receipt> =
+    try
+        if File.Exists(filePath) then
+            let json = File.ReadAllText(filePath)
+            let receipt = JsonSerializer.Deserialize<Receipt>(json, jsonOptions)
+            Success receipt
+        else
+            Error "Receipt file not found"
+    with
+    | ex -> Error $"Failed to load receipt: {ex.Message}"
+```
+
+### Loading JSON Receipts Programmatically
+```fsharp
+// Load a specific receipt
+let result = FileManager.loadReceipt "receipt_20251203_193556.json"
+
+match result with
+| Success receipt ->
+    printfn "Receipt loaded successfully!"
+    printfn "Date: %s" (receipt.Date.ToString())
+    printfn "Total: $%.2f" receipt.Total
+    printfn "Items: %d" receipt.Items.Length
+| Error msg ->
+    printfn "Error loading receipt: %s" msg
+
+// List all receipt files
+let allReceipts = 
+    Directory.GetFiles(".", "receipt_*.json")
+    |> Array.map (fun file -> FileManager.loadReceipt file)
+    |> Array.choose (fun result -> 
+        match result with
+        | Success r -> Some r
+        | Error _ -> None)
+```
+
 ## Extension Ideas
 
 - ?? **User Accounts** - Login system with order history
@@ -175,6 +290,8 @@ products
 - ??? **Product Images** - Add image support in GUI
 - ?? **Analytics** - Sales reporting and charts
 - ?? **Notifications** - Low stock alerts
+- ?? **Email Receipts** - Send receipts via email
+- ?? **PDF Export** - Convert JSON receipts to PDF format
 
 ## Team Development
 
@@ -187,29 +304,52 @@ Each module can be developed independently by different team members:
 | **Cart.fs** | Shopping cart | List operations, validation |
 | **PriceCalculator.fs** | Pricing logic | Pure functions, math |
 | **SearchFilter.fs** | Search features | List filtering, sorting |
-| **FileManager.fs** | File I/O | JSON, file operations |
+| **FileManager.fs** | File I/O (JSON) | JSON serialization, file operations |
 | **UI.fs** | Console interface | Console formatting, input |
 | **SimpleGui.fs** | GUI interface | Avalonia, event handling |
 | **Program.fs** | Coordination | State management, flow |
 
 ## Building and Running
 
-### Build the project
+### From the project directory
 ```bash
+# Navigate to project folder
+cd "pl3  2.0"
+
+# Build the project
 dotnet build
-```
 
-### Run the application
-```bash
+# Run the application
 dotnet run
-```
 
-### Clean build artifacts
-```bash
+# Clean build artifacts
 dotnet clean
 ```
 
+### From the parent directory
+```bash
+# Build
+dotnet build "pl3  2.0/pl3  2.0.fsproj"
+
+# Run
+dotnet run --project "pl3  2.0/pl3  2.0.fsproj"
+
+# Clean
+dotnet clean "pl3  2.0/pl3  2.0.fsproj"
+```
+
 ## Troubleshooting
+
+**Issue**: "Couldn't find a project to run"  
+**Solution**: Make sure you're in the correct directory:
+```bash
+cd "pl3  2.0"
+dotnet run
+```
+Or specify the project path from parent directory:
+```bash
+dotnet run --project "pl3  2.0/pl3  2.0.fsproj"
+```
 
 **Issue**: GUI window doesn't appear  
 **Solution**: Make sure you selected option 1 and wait a few seconds for Avalonia to initialize
@@ -218,7 +358,10 @@ dotnet clean
 **Solution**: Ensure .NET 10.0 SDK is installed: `dotnet --version`
 
 **Issue**: Receipt files not saving  
-**Solution**: Check write permissions in the application directory
+**Solution**: Check write permissions in the application directory. Receipts are saved as JSON files in the same directory as the executable.
+
+**Issue**: JSON parsing errors when loading receipts  
+**Solution**: Ensure the JSON file is valid and follows the Receipt structure defined in FileManager.fs
 
 ## Contributing
 
@@ -237,18 +380,21 @@ Students are encouraged to:
 2. Explore `PriceCalculator.fs` for pure functions
 3. Try the GUI mode first for intuitive interaction
 4. Read through `Cart.fs` for list operations
+5. Examine sample receipt JSON files to understand data structure
 
 ### Intermediate
 1. Understand pattern matching in `Program.fs`
 2. Study error handling with `StoreResult`
 3. Explore function composition in `SearchFilter.fs`
 4. Learn event handling in `SimpleGui.fs`
+5. Analyze JSON serialization in `FileManager.fs`
 
 ### Advanced
 1. Implement new features from extension ideas
 2. Add unit tests for all modules
 3. Optimize performance for large catalogs
 4. Integrate with external APIs
+5. Convert JSON receipts to other formats (PDF, CSV, XML)
 
 ## License
 
