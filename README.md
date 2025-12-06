@@ -1,24 +1,32 @@
-[README.md](https://github.com/user-attachments/files/23913878/README.md)
 # Simple Store Simulator
 
 A feature-rich store simulator application built with F# that supports both console and GUI modes.
 
 ## Features
 
-? **Dual Interface** - Choose between Console or GUI mode  
-?? **Shopping Cart** - Add, remove, and update items  
-?? **Smart Pricing** - Automatic discounts and tax calculation  
-?? **Search & Filter** - Find products easily  
-?? **Receipt Export** - Save receipts as text files  
+✨ **Dual Interface** - Choose between Console or GUI mode  
+🛒 **Shopping Cart** - Add, remove, and update items  
+💰 **Smart Pricing** - Automatic discounts and tax calculation  
+🔍 **Search & Filter** - Find products easily  
+📄 **Receipt Export** - Save receipts as JSON files  
 
 ## Quick Start
 
 ```bash
+# Navigate to the project directory
+cd "pl3  2.0"
+
 # Build
 dotnet build
 
 # Run
+cd "C:\Users\amr emad 2\source\repos\pl3  2.0\pl3  2.0"
 dotnet run
+```
+
+**Alternative** - Run from parent directory:
+```bash
+dotnet run --project "pl3  2.0/pl3  2.0.fsproj"
 ```
 
 Select your preferred mode:
@@ -34,16 +42,16 @@ Select your preferred mode:
 
 ```
 pl3  2.0/
-??? Types.fs           # Core data models
-??? Catalog.fs         # Product catalog management
-??? Cart.fs            # Shopping cart operations
-??? PriceCalculator.fs # Price and discount calculations
-??? SearchFilter.fs    # Product search and filtering
-??? FileManager.fs     # Receipt file operations
-??? UI.fs              # Console user interface
-??? SimpleGui.fs       # Avalonia GUI window
-??? Program.fs         # Application entry point
-??? README.md          # This file
+├── Types.fs           # Core data models
+├── Catalog.fs         # Product catalog management
+├── Cart.fs            # Shopping cart operations
+├── PriceCalculator.fs # Price and discount calculations
+├── SearchFilter.fs    # Product search and filtering
+├── FileManager.fs     # Receipt file operations (JSON)
+├── UI.fs              # Console user interface
+├── SimpleGui.fs       # Avalonia GUI window
+├── Program.fs         # Application entry point
+└── README.md          # This file
 ```
 
 ## Module Organization
@@ -56,7 +64,7 @@ pl3  2.0/
 
 ### Features
 - **SearchFilter.fs** - Search and filter products by various criteria
-- **FileManager.fs** - Save and load receipts as text files
+- **FileManager.fs** - Save and load receipts as JSON files
 
 ### User Interface
 - **UI.fs** - Console-based text interface
@@ -71,17 +79,43 @@ The store includes 10 products across categories:
 
 ## GUI Mode
 
-**Three-Panel Layout:**
-- ?? **Left Panel**: Product list with search functionality
-- ?? **Middle Panel**: Product details and quantity selector
-- ?? **Right Panel**: Shopping cart with live price breakdown
+**Enhanced Three-Panel Layout:**
+- 📋 **Left Panel**: Product list with search and advanced filtering
+- 📝 **Middle Panel**: Product details and quantity selector
+- 🛒 **Right Panel**: Shopping cart with full management and price breakdown
 
-**Features:**
-- Real-time search filtering
-- Click to select products
-- Add to cart with quantity validation
-- Visual status updates
-- One-click checkout
+**Core Features:**
+- ✅ Real-time product search by name
+- ✅ Advanced search & filter dialog with:
+  - Category filtering
+  - Price range filtering
+  - In-stock only filter
+  - Multiple sort options (name, price ascending/descending)
+- ✅ Click to select products
+- ✅ Add to cart with quantity validation
+- ✅ Visual status updates
+
+**Cart Management:**
+- ✅ **Remove items** - Select and remove individual items from cart
+- ✅ **Update quantity** - Change quantities with dialog (supports 0 to remove)
+- ✅ **Clear cart** - Empty entire cart with one click
+- ✅ Live price breakdown with automatic discounts
+- ✅ One-click checkout with receipt generation
+
+**Receipt History:**
+- ✅ **View all saved receipts** - Browse complete purchase history
+- ✅ **Receipt details viewer** - See full order information including:
+  - Transaction date and time
+  - Item list with quantities and prices
+  - Price breakdown (subtotal, discount, tax, total)
+- ✅ Easy-to-use dialog interface
+
+**Status Bar:**
+- Real-time feedback for all operations
+- Success/error messages with visual indicators (✓/✗)
+- Helpful hints and confirmations
+
+All console mode features are now available in the GUI with an intuitive point-and-click interface!
 
 ## Console Mode
 
@@ -93,7 +127,8 @@ The store includes 10 products across categories:
 5. Remove from Cart
 6. Update Quantity
 7. Checkout
-8. Exit
+8. **View Receipt History** 🆕
+9. Exit
 
 **Search Options:**
 - Search by name
@@ -102,11 +137,17 @@ The store includes 10 products across categories:
 - View in-stock only
 - Sort by price or name
 
+**Receipt History Features:**
+- Browse all saved receipts
+- View detailed receipt information
+- See complete order history
+- Review past transactions with full pricing breakdown
+
 ## Key Features
 
 ### Automatic Discounts
-- ?? 5% off orders over $200
-- ?? 10% off orders over $500
+- 💵 5% off orders over $200
+- 💰 10% off orders over $500
 
 ### Price Breakdown
 - Subtotal - Sum of all items
@@ -114,11 +155,37 @@ The store includes 10 products across categories:
 - Tax (8.5%) - Calculated on discounted total
 - **Total** - Final amount
 
-### Receipt Export
-- Saved as `receipt_YYYYMMDD_HHMMSS.txt`
-- Contains complete order details
-- Includes price breakdown
-- Timestamped for records
+### Receipt Export (JSON Format)
+- **Saved as**: `receipt_YYYYMMDD_HHMMSS.json`
+- **Format**: Pretty-printed JSON with indentation
+- **Contains**: 
+  - Transaction date and timestamp
+  - Complete item list with product details
+  - Price breakdown (subtotal, discount, tax, total)
+  - Full order history
+
+**Sample Receipt Structure:**
+```json
+{
+  "Date": "2025-12-03T19:35:56.034028+02:00",
+  "Items": [
+    {
+      "Product": {
+        "Id": 6,
+        "Name": "Headphones",
+        "Price": 49.99,
+        "Category": "Electronics",
+        "Stock": 25
+      },
+      "Quantity": 3
+    }
+  ],
+  "Subtotal": 1045.05,
+  "Discount": 104.505,
+  "Tax": 79.946325,
+  "Total": 1020.491325
+}
+```
 
 ## Technologies
 
@@ -130,15 +197,15 @@ The store includes 10 products across categories:
 
 ## F# Concepts Demonstrated
 
-- ? **Immutable data structures** - All data is immutable
-- ? **Pattern matching** - Extensive use throughout
-- ? **Discriminated unions** - For discount types and results
-- ? **Pure functions** - Side-effect free calculations
-- ? **Function composition** - Pipe operator for data flow
-- ? **Result types** - Proper error handling
-- ? **Module organization** - Clean separation of concerns
-- ? **Records** - Immutable data containers
-- ? **OOP Integration** - Avalonia GUI with F# functional core
+- ✅ **Immutable data structures** - All data is immutable
+- ✅ **Pattern matching** - Extensive use throughout
+- ✅ **Discriminated unions** - For discount types and results
+- ✅ **Pure functions** - Side-effect free calculations
+- ✅ **Function composition** - Pipe operator for data flow
+- ✅ **Result types** - Proper error handling
+- ✅ **Module organization** - Clean separation of concerns
+- ✅ **Records** - Immutable data containers
+- ✅ **OOP Integration** - Avalonia GUI with F# functional core
 
 ## Code Examples
 
@@ -164,97 +231,109 @@ products
 |> sortByPrice
 ```
 
+### JSON Serialization (FileManager.fs)
+```fsharp
+// Save receipt with pretty-printed JSON
+let saveReceipt (receipt: Receipt) (filePath: string) : StoreResult<string> =
+    try
+        let json = JsonSerializer.Serialize(receipt, jsonOptions)
+        File.WriteAllText(filePath, json)
+        Success $"Receipt saved to {filePath}"
+    with
+    | ex -> Error $"Failed to save receipt: {ex.Message}"
+
+// Load receipt from JSON file
+let loadReceipt (filePath: string) : StoreResult<Receipt> =
+    try
+        if File.Exists(filePath) then
+            let json = File.ReadAllText(filePath)
+            let receipt = JsonSerializer.Deserialize<Receipt>(json, jsonOptions)
+            Success receipt
+        else
+            Error "Receipt file not found"
+    with
+    | ex -> Error $"Failed to load receipt: {ex.Message}"
+```
+
+### Loading JSON Receipts Programmatically
+```fsharp
+// Load a specific receipt
+let result = FileManager.loadReceipt "receipt_20251203_193556.json"
+
+match result with
+| Success receipt ->
+    printfn "Receipt loaded successfully!"
+    printfn "Date: %s" (receipt.Date.ToString())
+    printfn "Total: $%.2f" receipt.Total
+    printfn "Items: %d" receipt.Items.Length
+| Error msg ->
+    printfn "Error loading receipt: %s" msg
+
+// List all receipt files
+let allReceipts = 
+    Directory.GetFiles(".", "receipt_*.json")
+    |> Array.map (fun file -> FileManager.loadReceipt file)
+    |> Array.choose (fun result -> 
+        match result with
+        | Success r -> Some r
+        | Error _ -> None)
+```
+
 ## Extension Ideas
 
-- ?? **User Accounts** - Login system with order history
-- ?? **Inventory Management** - Admin panel for stock control
-- ?? **Themes** - Multiple UI themes and color schemes
-- ?? **Unit Tests** - Add tests with xUnit or Expecto
-- ?? **Web Version** - Convert to Fable/Elmish
-- ?? **Mobile App** - Use Fabulous for iOS/Android
-- ??? **Database** - Replace JSON with SQL/NoSQL database
-- ??? **Product Images** - Add image support in GUI
-- ?? **Analytics** - Sales reporting and charts
-- ?? **Notifications** - Low stock alerts
+- 👤 **User Accounts** - Login system with order history
+- 📊 **Inventory Management** - Admin panel for stock control
+- 🎨 **Themes** - Multiple UI themes and color schemes
+- 🧪 **Unit Tests** - ✅ **COMPLETED! 84 tests with ~93% coverage**
+- 🌐 **Web Version** - Convert to Fable/Elmish
+- 📱 **Mobile App** - Use Fabulous for iOS/Android
+- 🗄️ **Database** - Replace JSON with SQL/NoSQL database
+- 🖼️ **Product Images** - Add image support in GUI
+- 📈 **Analytics** - Sales reporting and charts
+- 🔔 **Notifications** - Low stock alerts
+- 📧 **Email Receipts** - Send receipts via email
+- 🧾 **PDF Export** - Convert JSON receipts to PDF format
 
-## Team Development
+## 🧪 Testing
 
-Each module can be developed independently by different team members:
+### Comprehensive Test Suite ✅
 
-| Module | Responsibility | Key Skills |
-|--------|---------------|-----------|
-| **Types.fs** | Define data models | Record types, unions |
-| **Catalog.fs** | Product management | Map operations |
-| **Cart.fs** | Shopping cart | List operations, validation |
-| **PriceCalculator.fs** | Pricing logic | Pure functions, math |
-| **SearchFilter.fs** | Search features | List filtering, sorting |
-| **FileManager.fs** | File I/O | JSON, file operations |
-| **UI.fs** | Console interface | Console formatting, input |
-| **SimpleGui.fs** | GUI interface | Avalonia, event handling |
-| **Program.fs** | Coordination | State management, flow |
+The project includes a complete test suite with **84 passing tests** covering all core modules:
 
-## Building and Running
+| Module | Tests | Coverage | Status |
+|--------|-------|----------|--------|
+| Cart | 19 | ~95% | ✅ Passing |
+| PriceCalculator | 18 | ~95% | ✅ Passing |
+| Catalog | 20 | ~90% | ✅ Passing |
+| SearchFilter | 27 | ~95% | ✅ Passing |
+| **Total** | **84** | **~93%** | ✅ **All Passing** |
 
-### Build the project
+### Running Tests
+
 ```bash
-dotnet build
+cd "pl3  2.0/Tests"
+dotnet test
 ```
 
-### Run the application
-```bash
-dotnet run
+**Expected Output:**
+```
+Test summary: total: 84, failed: 0, succeeded: 84, skipped: 0
 ```
 
-### Clean build artifacts
-```bash
-dotnet clean
-```
+### What's Tested
 
-## Troubleshooting
+- ✅ **Cart Operations** - Add, remove, update with stock validation
+- ✅ **Price Calculations** - Subtotals, discounts (5%/10%), tax (8.5%)
+- ✅ **Catalog Management** - Product lookup, stock updates, immutability
+- ✅ **Search & Filter** - Name search, category/price filtering, sorting
+- ✅ **Immutability** - All operations preserve original data
+- ✅ **Error Handling** - Invalid inputs handled correctly
+- ✅ **Boundary Conditions** - Edge cases covered
 
-**Issue**: GUI window doesn't appear  
-**Solution**: Make sure you selected option 1 and wait a few seconds for Avalonia to initialize
+### Test Documentation
 
-**Issue**: Build errors  
-**Solution**: Ensure .NET 10.0 SDK is installed: `dotnet --version`
+- 📖 **Tests/README.md** - Comprehensive test documentation
+- 🚀 **Tests/QUICKSTART.md** - Quick start guide
+- 📊 **Tests/TEST_SUMMARY.md** - Complete test summary
 
-**Issue**: Receipt files not saving  
-**Solution**: Check write permissions in the application directory
-
-## Contributing
-
-Students are encouraged to:
-- ?? Report bugs and issues
-- ? Add new features
-- ?? Improve documentation
-- ?? Write unit tests
-- ?? Enhance the UI design
-- ?? Refactor code for better readability
-
-## Learning Path
-
-### Beginners
-1. Study `Types.fs` to understand the data model
-2. Explore `PriceCalculator.fs` for pure functions
-3. Try the GUI mode first for intuitive interaction
-4. Read through `Cart.fs` for list operations
-
-### Intermediate
-1. Understand pattern matching in `Program.fs`
-2. Study error handling with `StoreResult`
-3. Explore function composition in `SearchFilter.fs`
-4. Learn event handling in `SimpleGui.fs`
-
-### Advanced
-1. Implement new features from extension ideas
-2. Add unit tests for all modules
-3. Optimize performance for large catalogs
-4. Integrate with external APIs
-
-## License
-
-Educational project - Free to use and modify
-
----
-
-**Made with F# by Students** ??
+See [Tests/README.md](Tests/README.md) for detailed testing documentation.
