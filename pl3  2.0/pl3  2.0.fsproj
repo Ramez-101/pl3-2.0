@@ -3,18 +3,38 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net10.0</TargetFramework>
-    <RootNamespace>pl3__2._0</RootNamespace>
+    <RootNamespace>StoreSimulator</RootNamespace>
   </PropertyGroup>
 
+  <!-- 
+    PROJECT STRUCTURE:
+    ==================
+    /Core       - Core types and domain models
+    /Services   - Business logic and services  
+    /Data       - Data access and persistence
+    /UI         - User interface (Console & GUI)
+  -->
+
   <ItemGroup>
-    <Compile Include="Types.fs" />
-    <Compile Include="Catalog.fs" />
-    <Compile Include="Cart.fs" />
-    <Compile Include="PriceCalculator.fs" />
-    <Compile Include="SearchFilter.fs" />
-    <Compile Include="FileManager.fs" />
-    <Compile Include="UI.fs" />
-    <Compile Include="SimpleGui.fs" />
+    <!-- Core Layer - Domain Types -->
+    <Compile Include="Core\Types.fs" />
+    
+    <!-- Services Layer - Business Logic -->
+    <Compile Include="Services\UserManager.fs" />
+    <Compile Include="Services\Auth.fs" />
+    <Compile Include="Services\PriceCalculator.fs" />
+    <Compile Include="Services\SearchFilter.fs" />
+    
+    <!-- Data Layer - Data Access -->
+    <Compile Include="Data\Catalog.fs" />
+    <Compile Include="Data\Cart.fs" />
+    <Compile Include="Data\FileManager.fs" />
+    
+    <!-- UI Layer - User Interface -->
+    <Compile Include="UI\ConsoleUI.fs" />
+    <Compile Include="UI\StoreGui.fs" />
+    
+    <!-- Application Entry Point -->
     <Compile Include="Program.fs" />
   </ItemGroup>
 

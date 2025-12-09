@@ -2,13 +2,20 @@
 open Avalonia
 open Avalonia.Controls.ApplicationLifetimes
 open Avalonia.Themes.Fluent
-open Types
-open Catalog
-open Cart
-open PriceCalculator
-open SearchFilter
-open FileManager
-open UI
+open StoreSimulator.Core
+open StoreSimulator.Data.Catalog
+open StoreSimulator.Data.Cart
+open StoreSimulator.Services.PriceCalculator
+open StoreSimulator.Services.SearchFilter
+open StoreSimulator.Data.FileManager
+open StoreSimulator.UI.ConsoleUI
+
+module UI = StoreSimulator.UI.ConsoleUI
+module Catalog = StoreSimulator.Data.Catalog
+module Cart = StoreSimulator.Data.Cart
+module SearchFilter = StoreSimulator.Services.SearchFilter
+module PriceCalculator = StoreSimulator.Services.PriceCalculator
+module FileManager = StoreSimulator.Data.FileManager
 
 // Main store state
 type AppState = {
@@ -23,7 +30,7 @@ let initApp () : AppState =
             Catalog = Catalog.initializeCatalog()
             Cart = Cart.empty
         }
-        TaxRate = 8.5m // 8.5% tax rate
+        TaxRate = 8.5m
     }
 
 // Handle view all products
@@ -38,7 +45,7 @@ let rec handleSearchFilter (state: AppState) : AppState =
     UI.displaySearchMenu()
     
     match UI.getUserInput "" with
-    | "1" -> // Search by name
+    | "1" ->
         let searchTerm = UI.getUserInput "\nEnter product name to search: "
         let products = Catalog.getAllProducts state.Store.Catalog
         let filtered = SearchFilter.filterByName products searchTerm
@@ -46,7 +53,7 @@ let rec handleSearchFilter (state: AppState) : AppState =
         UI.waitForEnter()
         handleSearchFilter state
         
-    | "2" -> // Filter by category
+    | "2" ->
         let products = Catalog.getAllProducts state.Store.Catalog
         let categories = SearchFilter.getCategories products
         UI.displayCategories categories
@@ -56,7 +63,7 @@ let rec handleSearchFilter (state: AppState) : AppState =
         UI.waitForEnter()
         handleSearchFilter state
         
-    | "3" -> // Filter by price range
+    | "3" ->
         match UI.getUserDecimal "\nEnter minimum price: ", UI.getUserDecimal "Enter maximum price: " with
         | Some minPrice, Some maxPrice ->
             let products = Catalog.getAllProducts state.Store.Catalog
@@ -69,36 +76,35 @@ let rec handleSearchFilter (state: AppState) : AppState =
             UI.waitForEnter()
             handleSearchFilter state
             
-    | "4" -> // View in-stock only
+    | "4" ->
         let products = Catalog.getAllProducts state.Store.Catalog
         let filtered = SearchFilter.filterInStock products
         UI.displayCatalog filtered
         UI.waitForEnter()
         handleSearchFilter state
         
-    | "5" -> // Sort by price ascending
+    | "5" ->
         let products = Catalog.getAllProducts state.Store.Catalog
         let sorted = SearchFilter.sortByPriceAsc products
         UI.displayCatalog sorted
         UI.waitForEnter()
         handleSearchFilter state
         
-    | "6" -> // Sort by price descending
+    | "6" ->
         let products = Catalog.getAllProducts state.Store.Catalog
         let sorted = SearchFilter.sortByPriceDesc products
         UI.displayCatalog sorted
         UI.waitForEnter()
         handleSearchFilter state
         
-    | "7" -> // Sort by name
+    | "7" ->
         let products = Catalog.getAllProducts state.Store.Catalog
         let sorted = SearchFilter.sortByName products
         UI.displayCatalog sorted
         UI.waitForEnter()
         handleSearchFilter state
         
-    | "8" -> // Back to main menu
-        state
+    | "8" -> state
         
     | _ ->
         UI.displayError "Invalid choice"
@@ -115,7 +121,7 @@ let handleAddToCart (state: AppState) : AppState =
             | Some quantity ->
                 match Cart.addToCart state.Store.Cart product quantity with
                 | Success newCart ->
-                    UI.displaySuccess $"Added {quantity} x {product.Name} to cart"
+                    UI.displaySuccess (sprintf "Added %d x %s to cart" quantity product.Name)
                     UI.waitForEnter()
                     { state with Store = { state.Store with Cart = newCart } }
                 | Error msg ->
@@ -215,7 +221,6 @@ let handleCheckout (state: AppState) : AppState =
         let confirm = UI.getUserInput "Proceed with checkout? (y/n): "
         
         if confirm.ToLower() = "y" then
-            // Create receipt
             let receipt = FileManager.createReceipt state.Store.Cart breakdown
             let fileName = FileManager.generateFileName "receipt"
             
@@ -224,10 +229,9 @@ let handleCheckout (state: AppState) : AppState =
                 UI.displaySuccess msg
                 UI.displaySuccess "Thank you for your purchase!"
                 UI.waitForEnter()
-                // Clear cart after successful checkout
                 { state with Store = { state.Store with Cart = Cart.empty } }
             | Error msg ->
-                UI.displayError $"Could not save receipt: {msg}"
+                UI.displayError (sprintf "Could not save receipt: %s" msg)
                 UI.displayInfo "Checkout cancelled"
                 UI.waitForEnter()
                 state
@@ -239,16 +243,13 @@ let handleCheckout (state: AppState) : AppState =
 // Handle view receipt history
 let handleViewReceipts (state: AppState) : AppState =
     UI.clearScreen()
-    printfn "╔══════════════════════════════════════════════════════════════════════════════╗"
-    printfn "║                           RECEIPT HISTORY                                    ║"
-    printfn "╚══════════════════════════════════════════════════════════════════════════════╝"
+    printfn "================================================================================"
+    printfn "                           RECEIPT HISTORY                                      "
+    printfn "================================================================================"
     
-    // Get all JSON receipt files in current directory
     let receiptFiles = 
         System.IO.Directory.GetFiles(".", "receipt_*.json")
-        |> Array.sort
-        |> Array.rev  // Most recent first
-        |> Array.toList
+        |> Array.sort |> Array.rev |> Array.toList
     
     if receiptFiles.IsEmpty then
         UI.displayInfo "\nNo receipts found. Complete a checkout to create a receipt."
@@ -266,41 +267,41 @@ let handleViewReceipts (state: AppState) : AppState =
             match FileManager.loadReceipt selectedFile with
             | Success receipt ->
                 UI.clearScreen()
-                printfn "╔══════════════════════════════════════════════════════════════════════════════╗"
-                printfn "║                            RECEIPT DETAILS                                   ║"
-                printfn "╚══════════════════════════════════════════════════════════════════════════════╝"
-                printfn "\n📅 Date: %s" (receipt.Date.ToString("yyyy-MM-dd HH:mm:ss"))
-                printfn "\n📦 Items:\n"
-                printfn "%-35s %5s %10s %12s" "Product" "Qty" "Price" "Total"
-                printfn "%s" (String.replicate 78 "─")
-                
+                printfn "================================================================================"
+                printfn "                            RECEIPT DETAILS                                     "
+                printfn "================================================================================"
+                printfn "\nDate: %s" (receipt.Date.ToString("yyyy-MM-dd HH:mm:ss"))
+                printfn "\nItems:\n"
                 for item in receipt.Items do
                     let itemTotal = item.Product.Price * decimal item.Quantity
-                    printfn "%-35s x%-4d $%9.2f  = $%10.2f" 
-                        item.Product.Name 
-                        item.Quantity 
-                        item.Product.Price
-                        itemTotal
-                
-                printfn "\n%s" (String.replicate 78 "─")
-                printfn "%51s $%10.2f" "Subtotal:" receipt.Subtotal
-                
-                if receipt.Discount > 0m then
-                    printfn "%51s -$%9.2f" "Discount:" receipt.Discount
-                
-                printfn "%51s $%10.2f" "Tax (8.5%):" receipt.Tax
-                printfn "%s" (String.replicate 78 "═")
-                printfn "%51s $%10.2f" "TOTAL:" receipt.Total
-                printfn "%s" (String.replicate 78 "═")
+                    printfn "  %s x%d = $%.2f" item.Product.Name item.Quantity itemTotal
+                printfn "\nSubtotal: $%.2f" receipt.Subtotal
+                if receipt.Discount > 0m then printfn "Discount: -$%.2f" receipt.Discount
+                printfn "Tax: $%.2f" receipt.Tax
+                printfn "Total: $%.2f" receipt.Total
+                UI.waitForEnter()
             | Error msg ->
-                UI.displayError $"\nCould not load receipt: {msg}"
-        | true, 0 ->
-            UI.displayInfo "\nCancelled"
+                UI.displayError (sprintf "Could not load receipt: %s" msg)
+                UI.waitForEnter()
         | _ ->
-            UI.displayError "\nInvalid selection"
-    
-    UI.waitForEnter()
+            UI.displayError "Invalid receipt number"
+            UI.waitForEnter()
     state
+
+// Custom Avalonia Application
+type App() =
+    inherit Application()
+    
+    override this.Initialize() =
+        this.Styles.Add(Avalonia.Themes.Fluent.FluentTheme())
+    
+    override this.OnFrameworkInitializationCompleted() =
+        match this.ApplicationLifetime with
+        | :? IClassicDesktopStyleApplicationLifetime as desktop ->
+            let loginWindow = StoreSimulator.UI.StoreGui.LoginWindow()
+            desktop.MainWindow <- loginWindow
+        | _ -> ()
+        base.OnFrameworkInitializationCompleted()
 
 // Main application loop (Console mode)
 let rec mainLoop (state: AppState) : unit =
@@ -330,30 +331,14 @@ let rec mainLoop (state: AppState) : unit =
 // Console mode
 let runConsoleMode () =
     UI.clearScreen()
-    printfn "╔══════════════════════════════════════════════════════════════════════════════╗"
-    printfn "║                    Welcome to Simple Store Simulator!                        ║"
-    printfn "║                         Made with F# by Students                             ║"
-    printfn "╚══════════════════════════════════════════════════════════════════════════════╝"
+    printfn "================================================================================"
+    printfn "                    Welcome to Simple Store Simulator!                          "
+    printfn "                         Made with F# by Students                               "
+    printfn "================================================================================"
     printfn "\nPress Enter to start..."
     Console.ReadLine() |> ignore
-    
     let initialState = initApp()
     mainLoop initialState
-
-// Custom Avalonia Application
-type App() =
-    inherit Application()
-    
-    override this.Initialize() =
-        this.Styles.Add(Avalonia.Themes.Fluent.FluentTheme())
-    
-    override this.OnFrameworkInitializationCompleted() =
-        match this.ApplicationLifetime with
-        | :? IClassicDesktopStyleApplicationLifetime as desktop ->
-            desktop.MainWindow <- SimpleGui.StoreWindow()
-        | _ -> ()
-        
-        base.OnFrameworkInitializationCompleted()
 
 // GUI mode
 let runGuiMode (args: string[]) =
@@ -366,17 +351,15 @@ let runGuiMode (args: string[]) =
 // Entry point
 [<EntryPoint>]
 let main argv =
-    printfn "╔══════════════════════════════════════════════════════════════════════════════╗"
-    printfn "║                    Simple Store Simulator - F# Edition                       ║"
-    printfn "╚══════════════════════════════════════════════════════════════════════════════╝"
+    printfn "================================================================================"
+    printfn "                    Simple Store Simulator - F# Edition                         "
+    printfn "================================================================================"
     printfn "\nSelect mode:"
     printfn "1. GUI Mode (Graphical Interface)"
     printfn "2. Console Mode (Text Interface)"
     printf "\nEnter your choice (1 or 2): "
     
-    let choice = Console.ReadLine()
-    
-    match choice with
+    match Console.ReadLine() with
     | "1" ->
         printfn "\nStarting GUI mode..."
         runGuiMode argv
