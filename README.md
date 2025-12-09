@@ -319,3 +319,4 @@ Educational project - Free to use and modify
 Built with ❤️ using F# and functional programming principles
 
 **Made for learning functional programming, clean architecture, and F# development**
+
