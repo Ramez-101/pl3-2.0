@@ -1,339 +1,321 @@
-# Simple Store Simulator
+# Store Simulator - F# Edition
 
-A feature-rich store simulator application built with F# that supports both console and GUI modes.
+A professional shopping store simulator built with F# featuring both console and GUI interfaces, demonstrating clean architecture principles and functional programming concepts.
 
-## Features
+## ✨ Features
 
-✨ **Dual Interface** - Choose between Console or GUI mode  
-🛒 **Shopping Cart** - Add, remove, and update items  
-💰 **Smart Pricing** - Automatic discounts and tax calculation  
-🔍 **Search & Filter** - Find products easily  
-📄 **Receipt Export** - Save receipts as JSON files  
+- 🖥️ **Dual Interface** - Choose between modern GUI or classic console mode
+- 👤 **User Authentication** - Login system with Admin and Customer roles
+- 🛒 **Smart Shopping Cart** - Add, remove, and update items with validation
+- 💰 **Intelligent Pricing** - Automatic discounts and real-time tax calculation
+- 🔍 **Advanced Search** - Filter by category, brand, price range, and more
+- 📄 **Receipt Management** - Save and view order history as JSON
+- 📊 **Admin Panel** - Product management, inventory alerts, and order tracking
 
-## Quick Start
+---
+
+## 🚀 Quick Start
+
+### Prerequisites
+- .NET 10.0 SDK or higher
+- Visual Studio 2022 or VS Code with F# extension
+
+### Run the Application
 
 ```bash
-# Navigate to the project directory
 cd "pl3  2.0"
-
-# Build
-dotnet build
-
-# Run
-cd "C:\Users\amr emad 2\source\repos\pl3  2.0\pl3  2.0"
 dotnet run
 ```
 
-**Alternative** - Run from parent directory:
-```bash
-dotnet run --project "pl3  2.0/pl3  2.0.fsproj"
-```
+**Select your mode:**
+1. **GUI Mode** - Modern Avalonia-based graphical interface
+2. **Console Mode** - Traditional terminal-based interface
 
-Select your preferred mode:
-- **Option 1**: GUI Mode (Graphical Interface) 
-- **Option 2**: Console Mode (Text Interface)
+### Quick Login Credentials
 
-## Requirements
+| Username | Password | Role |
+|----------|----------|------|
+| admin | admin123 | Administrator |
+| customer | customer123 | Customer |
 
-- .NET 10.0 or higher
-- F# 8.0 or higher
+---
 
-## Project Structure
+## 📁 Project Structure
 
 ```
 pl3  2.0/
-├── Types.fs           # Core data models
-├── Catalog.fs         # Product catalog management
-├── Cart.fs            # Shopping cart operations
-├── PriceCalculator.fs # Price and discount calculations
-├── SearchFilter.fs    # Product search and filtering
-├── FileManager.fs     # Receipt file operations (JSON)
-├── UI.fs              # Console user interface
-├── SimpleGui.fs       # Avalonia GUI window
-├── Program.fs         # Application entry point
-└── README.md          # This file
+├── Core/                         # 🎯 Domain Layer
+│   └── Types.fs                  # All domain types and models
+│
+├── Services/                     # 💼 Business Logic Layer
+│   ├── UserManager.fs            # User authentication & sessions
+│   ├── Auth.fs                   # Authentication helpers
+│   ├── PriceCalculator.fs        # Pricing & discount logic
+│   └── SearchFilter.fs           # Search & filtering algorithms
+│
+├── Data/                         # 💾 Data Access Layer
+│   ├── Catalog.fs                # Product catalog management
+│   ├── Cart.fs                   # Shopping cart operations
+│   └── FileManager.fs            # File I/O & persistence
+│
+├── UI/                           # 🎨 Presentation Layer
+│   ├── ConsoleUI.fs              # Terminal interface
+│   └── StoreGui.fs               # Avalonia GUI interface
+│
+├── Program.fs                    # Entry point
+├── pl3  2.0.fsproj               # Project configuration
+└── README.md                     # This file
 ```
 
-## Module Organization
+### Architecture Layers
 
-### Core Domain (Business Logic)
-- **Types.fs** - Product, Cart, Store data models
-- **Catalog.fs** - Product inventory management
-- **Cart.fs** - Shopping cart logic with validation
-- **PriceCalculator.fs** - Pricing, discounts, tax calculations
+| Layer | Responsibility | Dependencies |
+|-------|---------------|--------------|
+| **Core** | Domain types & models | None |
+| **Services** | Business logic | Core |
+| **Data** | Data access & persistence | Core, Services |
+| **UI** | User interfaces | All layers |
 
-### Features
-- **SearchFilter.fs** - Search and filter products by various criteria
-- **FileManager.fs** - Save and load receipts as JSON files
+---
 
-### User Interface
-- **UI.fs** - Console-based text interface
-- **SimpleGui.fs** - Avalonia-based graphical interface
-- **Program.fs** - Application coordinator and entry point
+## 🖥️ GUI Mode Features
 
-## Sample Products
+### Three-Panel Layout
+- **📋 Left**: Product catalog with real-time search
+- **📝 Center**: Product details with quantity selector
+- **🛒 Right**: Shopping cart with price breakdown
 
-The store includes 10 products across categories:
-- **Electronics**: Laptop ($999.99), Monitor ($299.99), Keyboard ($75.00), Mouse ($25.50)
-- **Accessories**: USB Cable ($9.99), Mouse Pad ($12.99), Phone Stand ($15.99), Desk Lamp ($35.00)
+### Key Features
+- ✅ **Real-time Search** - Instant product filtering
+- ✅ **Advanced Filters** - Category, brand, price range
+- ✅ **Stock Indicators** - Visual stock status (OK/LOW/OUT)
+- ✅ **Cart Management** - Add, remove, update quantities
+- ✅ **Automatic Discounts** - 5% over $200, 10% over $500
+- ✅ **Receipt History** - View all past orders
+- ✅ **Status Updates** - Real-time operation feedback
 
-## GUI Mode
+### Admin Panel Features
+- ➕ **Add New Product** - Easy product creation dialog
+- 📊 **View All Orders** - Complete customer order history
+- ⚠️ **Low Stock Alerts** - Inventory monitoring
+- 💰 **Revenue Tracking** - Total sales dashboard
 
-**Enhanced Three-Panel Layout:**
-- 📋 **Left Panel**: Product list with search and advanced filtering
-- 📝 **Middle Panel**: Product details and quantity selector
-- 🛒 **Right Panel**: Shopping cart with full management and price breakdown
+---
 
-**Core Features:**
-- ✅ Real-time product search by name
-- ✅ Advanced search & filter dialog with:
-  - Category filtering
-  - Price range filtering
-  - In-stock only filter
-  - Multiple sort options (name, price ascending/descending)
-- ✅ Click to select products
-- ✅ Add to cart with quantity validation
-- ✅ Visual status updates
+## 💻 Console Mode Features
 
-**Cart Management:**
-- ✅ **Remove items** - Select and remove individual items from cart
-- ✅ **Update quantity** - Change quantities with dialog (supports 0 to remove)
-- ✅ **Clear cart** - Empty entire cart with one click
-- ✅ Live price breakdown with automatic discounts
-- ✅ One-click checkout with receipt generation
-
-**Receipt History:**
-- ✅ **View all saved receipts** - Browse complete purchase history
-- ✅ **Receipt details viewer** - See full order information including:
-  - Transaction date and time
-  - Item list with quantities and prices
-  - Price breakdown (subtotal, discount, tax, total)
-- ✅ Easy-to-use dialog interface
-
-**Status Bar:**
-- Real-time feedback for all operations
-- Success/error messages with visual indicators (✓/✗)
-- Helpful hints and confirmations
-
-All console mode features are now available in the GUI with an intuitive point-and-click interface!
-
-## Console Mode
-
-**Main Menu:**
+### Main Menu
 1. View All Products
 2. Search/Filter Products
-3. Add to Cart
+3. Add Product to Cart
 4. View Cart
 5. Remove from Cart
-6. Update Quantity
+6. Update Cart Quantity
 7. Checkout
-8. **View Receipt History** 🆕
+8. View Receipt History
 9. Exit
 
-**Search Options:**
-- Search by name
-- Filter by category
-- Filter by price range
-- View in-stock only
-- Sort by price or name
+### Search & Filter Options
+- 🔍 Search by product name
+- 📂 Filter by category
+- 💵 Filter by price range
+- ✅ Show in-stock only
+- ⬆️⬇️ Sort by price or name
 
-**Receipt History Features:**
-- Browse all saved receipts
-- View detailed receipt information
-- See complete order history
-- Review past transactions with full pricing breakdown
+---
 
-## Key Features
+## 💰 Pricing System
 
 ### Automatic Discounts
-- 💵 5% off orders over $200
-- 💰 10% off orders over $500
+| Order Total | Discount |
+|-------------|----------|
+| $200+ | 5% off |
+| $500+ | 10% off |
 
 ### Price Breakdown
-- Subtotal - Sum of all items
-- Discount - Automatically applied
-- Tax (8.5%) - Calculated on discounted total
-- **Total** - Final amount
+```
+Subtotal:  $299.97
+Discount:  -$0.00
+Tax (8.5%): $25.50
+─────────────────────
+Total:     $325.47
+```
 
-### Receipt Export (JSON Format)
-- **Saved as**: `receipt_YYYYMMDD_HHMMSS.json`
-- **Format**: Pretty-printed JSON with indentation
-- **Contains**: 
-  - Transaction date and timestamp
-  - Complete item list with product details
-  - Price breakdown (subtotal, discount, tax, total)
-  - Full order history
+---
 
-**Sample Receipt Structure:**
+## 📄 Receipt Management
+
+### JSON Receipt Format
+Receipts are saved as `receipt_YYYYMMDD_HHMMSS.json`:
+
 ```json
 {
-  "Date": "2025-12-03T19:35:56.034028+02:00",
+  "OrderId": "ORD-20251203194530-1234",
+  "CustomerId": 2,
+  "CustomerName": "Demo Customer",
+  "Date": "2025-12-03T19:45:30.123456+02:00",
   "Items": [
     {
       "Product": {
-        "Id": 6,
-        "Name": "Headphones",
-        "Price": 49.99,
-        "Category": "Electronics",
-        "Stock": 25
+        "Id": 1,
+        "Name": "MacBook Pro 14 inch",
+        "Price": 1999.99,
+        "Category": "Laptops",
+        "Stock": 9
       },
-      "Quantity": 3
+      "Quantity": 1
     }
   ],
-  "Subtotal": 1045.05,
-  "Discount": 104.505,
-  "Tax": 79.946325,
-  "Total": 1020.491325
+  "Subtotal": 1999.99,
+  "Discount": 199.999,
+  "Tax": 153.00,
+  "Total": 1952.99,
+  "Status": "Completed"
 }
 ```
 
-## Technologies
-
-- **F# 8.0+** - Functional programming language
-- **.NET 10.0** - Runtime framework
-- **Avalonia UI 11.0** - Cross-platform GUI framework
-- **System.Text.Json** - JSON serialization
-- **FSharp.SystemTextJson** - F# JSON integration
-
-## F# Concepts Demonstrated
-
-- ✅ **Immutable data structures** - All data is immutable
-- ✅ **Pattern matching** - Extensive use throughout
-- ✅ **Discriminated unions** - For discount types and results
-- ✅ **Pure functions** - Side-effect free calculations
-- ✅ **Function composition** - Pipe operator for data flow
-- ✅ **Result types** - Proper error handling
-- ✅ **Module organization** - Clean separation of concerns
-- ✅ **Records** - Immutable data containers
-- ✅ **OOP Integration** - Avalonia GUI with F# functional core
-
-## Code Examples
-
-### Immutable Cart Operations
+### Loading Receipts Programmatically
 ```fsharp
-let addToCart cart product quantity = 
-    // Returns new cart, doesn't modify original
-    Success (newItem :: cart)
+// Load specific receipt
+match FileManager.loadReceipt "receipt_20251203.json" with
+| Success receipt -> 
+    printfn "Total: $%.2f" receipt.Total
+| Error msg -> 
+    printfn "Error: %s" msg
+
+// Get all receipts
+let allOrders = FileManager.getAllReceipts()
+let totalRevenue = allOrders |> List.sumBy (fun o -> o.Total)
+```
+
+---
+
+## 🛠️ Technologies
+
+- **F# 8.0+** - Functional-first programming language
+- **.NET 10.0** - Cross-platform runtime
+- **Avalonia UI 11.0** - Modern cross-platform GUI framework
+- **System.Text.Json** - High-performance JSON serialization
+- **FSharp.SystemTextJson** - F# type support for JSON
+
+---
+
+## 🎓 F# Concepts Demonstrated
+
+### Immutable Data
+```fsharp
+// Operations return new data, never mutate
+let addToCart cart product quantity =
+    Success (newItem :: cart)  // New list, original unchanged
 ```
 
 ### Pattern Matching
 ```fsharp
 match Cart.addToCart cart product quantity with
-| Success newCart -> // Handle success
-| Error msg -> // Handle error
+| Success newCart -> updateDisplay newCart
+| Error msg -> showError msg
+```
+
+### Discriminated Unions
+```fsharp
+type DiscountType =
+    | NoDiscount
+    | PercentageOff of decimal
+    | BuyXGetYFree of int * int
+```
+
+### Result Type for Error Handling
+```fsharp
+type StoreResult<'T> =
+    | Success of 'T
+    | Error of string
 ```
 
 ### Function Composition
 ```fsharp
 products
-|> filterByName searchTerm
-|> filterByCategory category
-|> sortByPrice
+|> SearchFilter.filterByName "laptop"
+|> SearchFilter.filterByCategory "Electronics"
+|> SearchFilter.sortByPrice
 ```
 
-### JSON Serialization (FileManager.fs)
-```fsharp
-// Save receipt with pretty-printed JSON
-let saveReceipt (receipt: Receipt) (filePath: string) : StoreResult<string> =
-    try
-        let json = JsonSerializer.Serialize(receipt, jsonOptions)
-        File.WriteAllText(filePath, json)
-        Success $"Receipt saved to {filePath}"
-    with
-    | ex -> Error $"Failed to save receipt: {ex.Message}"
+### Module Organization
+- Clean separation of concerns
+- Pure functions (no side effects)
+- Immutable data structures
+- Type-safe domain modeling
 
-// Load receipt from JSON file
-let loadReceipt (filePath: string) : StoreResult<Receipt> =
-    try
-        if File.Exists(filePath) then
-            let json = File.ReadAllText(filePath)
-            let receipt = JsonSerializer.Deserialize<Receipt>(json, jsonOptions)
-            Success receipt
-        else
-            Error "Receipt file not found"
-    with
-    | ex -> Error $"Failed to load receipt: {ex.Message}"
-```
+---
 
-### Loading JSON Receipts Programmatically
-```fsharp
-// Load a specific receipt
-let result = FileManager.loadReceipt "receipt_20251203_193556.json"
+## 📦 Sample Products
 
-match result with
-| Success receipt ->
-    printfn "Receipt loaded successfully!"
-    printfn "Date: %s" (receipt.Date.ToString())
-    printfn "Total: $%.2f" receipt.Total
-    printfn "Items: %d" receipt.Items.Length
-| Error msg ->
-    printfn "Error loading receipt: %s" msg
+The store includes **15 products** across multiple categories:
 
-// List all receipt files
-let allReceipts = 
-    Directory.GetFiles(".", "receipt_*.json")
-    |> Array.map (fun file -> FileManager.loadReceipt file)
-    |> Array.choose (fun result -> 
-        match result with
-        | Success r -> Some r
-        | Error _ -> None)
-```
+| Category | Products | Price Range |
+|----------|----------|-------------|
+| Laptops | MacBook Pro, iPad Pro | $1,099 - $1,999 |
+| Monitors | Dell UltraSharp 4K | $549 |
+| Audio | Sony WH-1000XM5, AirPods Pro | $249 - $349 |
+| Accessories | Keyboards, Mice, Hubs, Stands | $29 - $149 |
+| Storage | Samsung 980 PRO SSD | $129 |
 
-## Extension Ideas
+---
 
-- 👤 **User Accounts** - Login system with order history
-- 📊 **Inventory Management** - Admin panel for stock control
-- 🎨 **Themes** - Multiple UI themes and color schemes
-- 🧪 **Unit Tests** - ✅ **COMPLETED! 84 tests with ~93% coverage**
-- 🌐 **Web Version** - Convert to Fable/Elmish
-- 📱 **Mobile App** - Use Fabulous for iOS/Android
-- 🗄️ **Database** - Replace JSON with SQL/NoSQL database
-- 🖼️ **Product Images** - Add image support in GUI
-- 📈 **Analytics** - Sales reporting and charts
-- 🔔 **Notifications** - Low stock alerts
-- 📧 **Email Receipts** - Send receipts via email
-- 🧾 **PDF Export** - Convert JSON receipts to PDF format
+## 🔧 Development
 
-## 🧪 Testing
-
-### Comprehensive Test Suite ✅
-
-The project includes a complete test suite with **84 passing tests** covering all core modules:
-
-| Module | Tests | Coverage | Status |
-|--------|-------|----------|--------|
-| Cart | 19 | ~95% | ✅ Passing |
-| PriceCalculator | 18 | ~95% | ✅ Passing |
-| Catalog | 20 | ~90% | ✅ Passing |
-| SearchFilter | 27 | ~95% | ✅ Passing |
-| **Total** | **84** | **~93%** | ✅ **All Passing** |
-
-### Running Tests
-
+### Build
 ```bash
-cd "pl3  2.0/Tests"
-dotnet test
+dotnet build
 ```
 
-**Expected Output:**
+### Run
+```bash
+dotnet run
 ```
-Test summary: total: 84, failed: 0, succeeded: 84, skipped: 0
+
+### Clean
+```bash
+dotnet clean
 ```
 
-### What's Tested
+---
 
-- ✅ **Cart Operations** - Add, remove, update with stock validation
-- ✅ **Price Calculations** - Subtotals, discounts (5%/10%), tax (8.5%)
-- ✅ **Catalog Management** - Product lookup, stock updates, immutability
-- ✅ **Search & Filter** - Name search, category/price filtering, sorting
-- ✅ **Immutability** - All operations preserve original data
-- ✅ **Error Handling** - Invalid inputs handled correctly
-- ✅ **Boundary Conditions** - Edge cases covered
+## 🚀 Extension Ideas
 
-### Test Documentation
+- [ ] 🗄️ **Database Integration** - Replace JSON with SQL/PostgreSQL
+- [ ] 🔐 **Enhanced Security** - JWT tokens, bcrypt hashing
+- [ ] 📧 **Email Notifications** - Send receipts via email
+- [ ] 📊 **Analytics Dashboard** - Sales charts and reports
+- [ ] 🌐 **Web API** - REST API with Giraffe/Saturn
+- [ ] 📱 **Mobile App** - Xamarin.Forms or MAUI
+- [ ] 🧪 **Unit Tests** - xUnit test suite
+- [ ] 🐳 **Docker Support** - Containerized deployment
+- [ ] 📈 **Inventory Forecasting** - ML.NET predictions
+- [ ] 🎨 **Theme System** - Multiple UI themes
 
-- 📖 **Tests/README.md** - Comprehensive test documentation
-- 🚀 **Tests/QUICKSTART.md** - Quick start guide
-- 📊 **Tests/TEST_SUMMARY.md** - Complete test summary
+---
 
-See [Tests/README.md](Tests/README.md) for detailed testing documentation.
+## 📚 Learning Resources
+
+This project demonstrates:
+- ✅ Clean Architecture principles
+- ✅ Domain-Driven Design (DDD)
+- ✅ Functional programming patterns
+- ✅ Immutable data structures
+- ✅ Type-safe error handling
+- ✅ Module-based organization
+- ✅ OOP/FP hybrid (Avalonia + F#)
+
+---
+
+## 📝 License
+
+Educational project - Free to use and modify
+
+---
+
+## 👨‍💻 Author
+
+Built with ❤️ using F# and functional programming principles
+
+**Made for learning functional programming, clean architecture, and F# development**
